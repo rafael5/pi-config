@@ -1,0 +1,157 @@
+# ~/.aliases-info
+# ==================================
+# Command Information / Cheat Sheet
+# Prefix: info.*
+# First item = primary documentation URL
+# ==================================
+
+
+# -----------------------------
+# Terminator
+# -----------------------------
+alias info.terminator='echo "
+Terminator — Commands / Shortcuts (Most Useful)
+
+Docs:
+https://gnome-terminator.readthedocs.io/en/latest/
+
+1. terminator                         # Launch Terminator
+2. terminator -l <layout>             # Start with a saved layout
+3. terminator -m                      # Maximize window on start
+4. terminator --geometry=<WxH+X+Y>    # Start with specific window size/position
+5. terminator --version               # Show Terminator version
+6. terminator --help                  # Show help/command options
+
+Common Shortcuts:
+7. Ctrl + Shift + O                   # Split terminal horizontally
+8. Ctrl + Shift + E                   # Split terminal vertically
+9. Ctrl + Shift + T                   # Open new tab
+10. Ctrl + Shift + W                  # Close current terminal
+11. Ctrl + Shift + X                  # Toggle maximize terminal pane
+12. Alt + Arrow keys                  # Move between panes
+13. Ctrl + Shift + Q                  # Quit Terminator
+14. Ctrl + Shift + C                  # Copy
+15. Ctrl + Shift + V                  # Paste
+
+Config / Files:
+16. ~/.config/terminator/config       # Main configuration file
+17. terminator -p <profile>           # Launch with specific profile
+18. terminator -l <layout> -p <profile> # Layout with profile
+"'
+
+
+
+
+# -----------------------------
+# Git
+# -----------------------------
+alias info.git='echo "
+Git — Commands (Most Useful)
+
+Docs:
+https://git-scm.com/docs
+
+1. git status
+2. git add <file_or_dir>
+3. git commit -m \"message\"
+4. git push
+5. git pull
+6. git checkout <branch>
+7. git checkout -b <branch>
+8. git branch
+9. git log --oneline --graph --decorate
+10. git diff
+11. git remote -v
+12. git clone <repo>
+13. git fetch
+14. git merge <branch>
+15. git stash
+16. git stash pop
+17. git show <commit>
+18. git reset --hard <commit>
+19. git rm <file>
+20. git mv <old> <new>
+21. git tag <tag>
+22. git push origin --tags
+23. git stash list
+24. git checkout -- <file>
+25. git push -u origin <branch>
+"'
+
+# -----------------------------
+# Docker
+# -----------------------------
+alias info.docker='echo "
+Docker — Commands (Most Useful)
+
+Docs:
+https://docs.docker.com/reference/
+
+1. docker ps
+2. docker ps -a
+3. docker images
+4. docker run -it <image>
+5. docker logs <container>
+6. docker stop <container>
+7. docker start <container>
+8. docker rm <container>
+9. docker rmi <image>
+10. docker build -t <tag> .
+11. docker pull <image>
+12. docker push <image>
+13. docker exec -it <container> /bin/bash
+14. docker inspect <container>
+15. docker container prune
+16. docker image prune -a
+17. docker info
+18. docker --version
+"'
+
+# -----------------------------
+# Podman
+# -----------------------------
+alias info.podman='echo "
+Podman — Commands (Most Useful)
+
+Docs:
+https://docs.podman.io/en/latest/Commands.html
+
+1. podman ps
+2. podman ps -a
+3. podman images
+4. podman run -it <image>
+5. podman logs <container>
+6. podman stop <container>
+7. podman start <container>
+8. podman rm <container>
+9. podman rmi <image>
+10. podman exec -it <container> /bin/bash
+11. podman inspect <container>
+12. podman pull <image>
+13. podman build -t <tag> .
+14. podman info
+15. podman --version
+"'
+
+# -----------------------------
+# SSH
+# -----------------------------
+alias info.ssh='echo "
+SSH — Commands (Most Useful)
+
+Docs:
+https://www.openssh.com/manual.html
+
+1. ssh user@host
+2. ssh -T user@host
+3. ssh -i ~/.ssh/id_file user@host
+4. scp file user@host:/path/
+5. scp -r dir user@host:/path/
+6. ssh-copy-id user@host
+7. ssh -v user@host
+8. ssh -L local_port:host:remote_port user@host
+9. ssh -R remote_port:host:local_port user@host
+10. ssh-add -l
+11. ssh-add ~/.ssh/id_file
+12. cat ~/.ssh/known_hosts
+"'
