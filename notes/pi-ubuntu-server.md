@@ -106,14 +106,6 @@ git config --global credential.helper store
 
 
 
-### GIT: ZSHELL
-```text
-git clone https://github.com/rafael5/zshell
-
-user: rafael5
-key:  REDACTED
-
-
 
 # zshell bashscripts
 sudo ./aaLinux-base.sh
