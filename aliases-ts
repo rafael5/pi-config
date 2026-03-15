@@ -1,0 +1,37 @@
+# =========================
+# Tailscale Aliases
+# Prefix: ts.[function]
+# =========================
+
+# Show overall Tailscale status
+alias ts.status='tailscale status'
+
+# Show detailed Tailscale daemon info
+alias ts.daemon='tailscale netcheck && tailscale status --json'
+
+# Show Tailscale IPs for this host
+alias ts.ip='tailscale ip -4 && tailscale ip -6'
+
+# Show Tailscale certificates and key locations
+alias ts.certs='echo "check in  /var/lib/tailscale/certs"'
+
+# Ping a Tailscale node by name or IP
+alias ts.ping='function _ts_ping(){ tailscale ping "$1"; }; _ts_ping'
+
+# Restart Tailscale daemon (requires sudo)
+alias ts.restart='sudo systemctl restart tailscaled'
+
+# Stop Tailscale daemon
+alias ts.stop='sudo systemctl stop tailscaled'
+
+# Start Tailscale daemon
+alias ts.start='sudo systemctl start tailscaled'
+
+# Show active interfaces Tailscale uses
+alias ts.interfaces='ip addr show | grep tailscale'
+
+# Show Tailscale configuration
+alias ts.config='sudo tailscale up --print-config'
+
+# Check Tailscale web health service
+alias ts.web.health='curl https://pi5.warg-torino.ts.net'

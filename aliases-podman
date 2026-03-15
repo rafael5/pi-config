@@ -1,0 +1,120 @@
+# -----------------------------------------------------------------------------
+# podman
+# -----------------------------------------------------------------------------
+alias podman.start='podman machine init; podman start machine'
+alias podman.stop='podman stop'
+alias podman.restart='podman machine stop && podman machine start'
+alias podman.list='podman ps -a'
+alias podman.prune='podman system prune -a'
+alias podman.gui='open -a  /Applications/Podman\ Desktop.app/'
+alias podman.tui='podman-tui'
+
+
+# -----------------------------------------------------------------------------
+# debian13: base vm
+# -----------------------------------------------------------------------------
+alias pod.debian.run='podman run -it --rm default-debian13-dev bash'
+
+
+
+# -----------------------------------------------------------------------------
+# nextcloud (personal cloud)
+# -----------------------------------------------------------------------------
+# https://hub.docker.com/r/nextcloud/all-in-one
+# For Linux and without a web server or reverse proxy (like Apache, Nginx and else)
+
+alias pod.nextcloud.run='sudo podman run \
+--sig-proxy=false \
+--name nextcloud-aio-mastercontainer \
+--restart always \
+--publish 80:80 \
+--publish 8080:8080 \
+--publish 8443:8443 \
+--volume nextcloud_aio_mastercontainer:/mnt/docker-aio-config \
+--volume /var/run/docker.sock:/var/run/docker.sock:ro \
+nextcloud/all-in-one:latest'
+
+alias pod.nextcloud.open='open https://localhost:8080'
+
+
+
+
+# -----------------------------------------------------------------------------
+# collabora (web-based libreoffice)
+# -----------------------------------------------------------------------------
+alias pod.collabora.run='podman run -t -d -p 9980:9980 collabora/code:latest-arm64'
+alias pod.collabora.open='open http://localhost:9980'
+
+
+
+
+# -----------------------------------------------------------------------------
+# jupyter
+# -----------------------------------------------------------------------------
+alias pod.jupyter.run=' \
+  podman run -it --rm -p 8888:8888 \
+  -v "${PWD}":/home/jovyan/work \
+  jupyter/scipy-notebook:latest'
+
+# alias pod.jupyter.open='open http://localhost:8888'
+
+alias pod.jupyter.open='open "$(podman logs "$(podman ps --filter "ancestor=jupyter/scipy-notebook" --format "{{.Names}}" | head -n1)" 2>&1 | grep -Eo "http://127\.0\.0\.1:[0-9]+/[a-zA-Z0-9?=/_-]*" | tail -n1)"'
+
+
+
+
+
+# -----------------------------------------------------------------------------
+# home assistant
+# -----------------------------------------------------------------------------
+# setup:
+#   mkdir ~/homeassistant
+#   podman pull homeassistant/home-assistant
+
+alias pod.homeassistant.run=' \
+  podman run -d \
+  --name=homeassistant \
+  -v ~/homeassistant:/config \
+  -p 8123:8123 \
+  --restart=unless-stopped \
+  homeassistant/home-assistant'
+
+alias pod.homeassistant.open='open http://localhost:8123'
+
+
+
+
+# -----------------------------------------------------------------------------
+# ollama-web UI
+# -----------------------------------------------------------------------------
+alias pod.ollama.run=' \
+     podman run -d --network=host -v open-webui:/app/backend/data \
+    -e OLLAMA_BASE_URL=http://127.0.0.1:11434 \
+    --name open-webui --restart always ghcr.io/open-webui/open-webui:main'
+
+alias pod.ollama.open='open http://localhost:3000'
+
+
+
+
+# -----------------------------------------------------------------------------
+#  YottaDB + Octo + GUI (latest master)
+# -----------------------------------------------------------------------------
+# https://yottadb.com/whats-new/happy-new-year-r1-36-released-new-gui
+alias pod.ydb.run='podman run -it --rm \
+                   -p 9080:9080 -p 1337:1337 \
+                   -v $(pwd)/ydb-data:/data \
+                   download.yottadb.com/yottadb/yottadb-debian:latest'
+                   
+alias pod.ydb.gui='open http://localhost:9080/'
+
+
+# https://yottadb.com/whats-new/happy-new-year-r1-36-released-new-gui/
+# https://hub.docker.com/r/yottadb/octo-vehu
+alias pod.ydb.vista.run='podman run -d \
+                  -p 2222:22 -p 1338:1338 -p 8089:8089 -p 9430:9430 \
+                  --name=octo-vehu \
+                  download.yottadb.com/yottadb/octo-vehu:latest-master'
+                  
+alias pod.ydb.vista.gui='echo "login: admin/admin"; open http://localhost:8089'
+

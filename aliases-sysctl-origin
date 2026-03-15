@@ -1,0 +1,66 @@
+# ===== COLOR DEFINITIONS =====
+# Service type
+GREEN="\033[0;32m"    # OS / system services
+YELLOW="\033[0;33m"   # Package-installed services
+BLUE="\033[0;34m"     # User / custom services
+CYAN="\033[0;36m"     # Runtime / transient
+RESET="\033[0m"
+
+# Enablement status
+STATUS_GREEN="\033[0;32m"   # enabled
+STATUS_RED="\033[0;31m"     # disabled
+STATUS_YELLOW="\033[0;33m"  # static
+
+# ===== FUNCTION TO PRINT SERVICE WITH STATUS =====
+print_service() {
+  local name="$1"
+  local path="$2"
+  local status="$3"
+  local type_color="$4"
+
+  # Colorize enablement
+  case "$status" in
+    enabled) status_col="${STATUS_GREEN}$status${RESET}" ;;
+    disabled) status_col="${STATUS_RED}$status${RESET}" ;;
+    static) status_col="${STATUS_YELLOW}$status${RESET}" ;;
+    *) status_col="$status" ;;
+  esac
+
+  echo -e "$type_color$name${RESET} [$status_col] ($path)"
+}
+
+# ===== OS SERVICES =====
+alias sysctl.origin.os='for s in $(systemctl list-unit-files --type=service --no-legend | awk "{print \$1}"); do
+  path=$(systemctl show -p FragmentPath $s 2>/dev/null | cut -d"=" -f2)
+  status=$(systemctl is-enabled $s 2>/dev/null || echo "disabled")
+  if [[ $path == /lib/systemd/system/* ]]; then
+    print_service $s $path $status $GREEN
+  fi
+done'
+
+# ===== PACKAGE-INSTALLED SERVICES =====
+alias sysctl.origin.pkg='for s in $(systemctl list-unit-files --type=service --no-legend | awk "{print \$1}"); do
+  path=$(systemctl show -p FragmentPath $s 2>/dev/null | cut -d"=" -f2)
+  status=$(systemctl is-enabled $s 2>/dev/null || echo "disabled")
+  if [[ -n $path && $path != /lib/systemd/system/* && $path != /etc/systemd/system/* && $path != /run/systemd/system/* ]]; then
+    print_service $s $path $status $YELLOW
+  fi
+done'
+
+# ===== USER / CUSTOM SERVICES =====
+alias sysctl.origin.user='for s in $(systemctl list-unit-files --type=service --no-legend | awk "{print \$1}"); do
+  path=$(systemctl show -p FragmentPath $s 2>/dev/null | cut -d"=" -f2)
+  status=$(systemctl is-enabled $s 2>/dev/null || echo "disabled")
+  if [[ $path == /etc/systemd/system/* ]]; then
+    print_service $s $path $status $BLUE
+  fi
+done'
+
+# ===== RUNTIME / TRANSIENT SERVICES =====
+alias sysctl.origin.runtime='for s in $(systemctl list-unit-files --type=service --no-legend | awk "{print \$1}"); do
+  path=$(systemctl show -p FragmentPath $s 2>/dev/null | cut -d"=" -f2)
+  status=$(systemctl is-enabled $s 2>/dev/null || echo "disabled")
+  if [[ $path == /run/systemd/system/* ]]; then
+    print_service $s $path $status $CYAN
+  fi
+done'

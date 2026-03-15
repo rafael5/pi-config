@@ -1,0 +1,75 @@
+# ============================
+# Raspberry Pi Tool Aliases
+# ============================
+
+# ---------- SYSTEM ----------
+alias tool.system.services='systemctl list-units --type=service --all'
+alias tool.system.failed='systemctl --failed'
+alias tool.system.enabled='systemctl list-unit-files --state=enabled'
+alias tool.system.disabled='systemctl list-unit-files --state=disabled'
+alias tool.system.static='systemctl list-unit-files --state=static'
+alias tool.system.uptime='uptime'
+alias tool.system.cpu='top -b -n1 | head -15'
+alias tool.system.mem='free -h'
+alias tool.system.vmstat='vmstat 1 5'
+alias tool.system.proc='ps aux --sort=-%mem | head -20'
+
+# ---------- NETWORK ----------
+alias tool.network.ifaces='ip a'
+alias tool.network.routes='ip route'
+alias tool.network.ports='ss -tulpn'
+alias tool.network.ping='ping -c4 8.8.8.8'
+alias tool.network.curl='curl -I https://example.com'
+alias tool.network.traceroute='traceroute 8.8.8.8'
+alias tool.network.nmap='sudo nmap -sP 192.168.1.0/24'
+alias tool.network.tailscale_status='tailscale status'
+alias tool.network.tailscale_ip='tailscale ip'
+
+# ---------- STORAGE ----------
+alias tool.storage.disk='df -h'
+alias tool.storage.diskusage='du -sh * 2>/dev/null'
+alias tool.storage.lsblk='lsblk'
+alias tool.storage.blkid='blkid'
+alias tool.storage.mounts='mount'
+
+# ---------- LOGS ----------
+alias tool.logs.syslog='tail -n 50 /var/log/syslog'
+alias tool.logs.authlog='tail -n 50 /var/log/auth.log'
+alias tool.logs.journal='journalctl -xe --no-pager'
+
+# ---------- PACKAGES ----------
+alias tool.packages.installed='apt list --installed'
+alias tool.packages.info='apt-cache show'
+alias tool.packages.snap='snap list'
+
+# ---------- ACCESS / SECURITY ----------
+alias tool.access.ssh='who'
+alias tool.access.last='last'
+alias tool.access.fail2ban='sudo fail2ban-client status'
+alias tool.access.ufw='sudo ufw status'
+alias tool.access.rfkill='rfkill list all'
+alias tool.access.sudoers='sudo cat /etc/sudoers'
+
+# ---------- HARDWARE / SENSORS ----------
+alias tool.hardware.temp='vcgencmd measure_temp'
+alias tool.hardware.gpio='gpio readall'
+alias tool.hardware.i2c='i2cdetect -y 1'
+alias tool.hardware.usb='lsusb'
+alias tool.hardware.pci='lspci'
+
+# ---------- DEBUG / ADVANCED ----------
+alias tool.debug.strace='strace -p'
+alias tool.debug.ltrace='ltrace -p'
+alias tool.debug.tcpdump='sudo tcpdump -i any -c 20'
+alias tool.debug.systemd_analyze='systemd-analyze blame'
+alias tool.debug.watch='watch'
+
+# ---------- CADDY / TAILSCALE ----------
+alias tool.caddy.status='sudo systemctl status caddy'
+alias tool.caddy.restart='sudo systemctl restart caddy'
+alias tool.caddy.reload='sudo systemctl reload caddy'
+
+alias tool.tailscale.up='sudo tailscale up'
+alias tool.tailscale.down='sudo tailscale down'
+alias tool.tailscale.web='curl -k https://127.0.0.1:8080'
+alias tool.tailscale.ping='ping -c3 $(tailscale ip)'

@@ -1,0 +1,58 @@
+# =========================
+# sysctl.origin.metadata
+# =========================
+alias sysctl.origin.metadata='
+GREEN="\033[0;32m"; YELLOW="\033[0;33m"; BLUE="\033[0;34m"; CYAN="\033[0;36m"; RESET="\033[0m"
+STATUS_GREEN="\033[0;32m"; STATUS_RED="\033[0;31m"; STATUS_YELLOW="\033[0;33m"
+
+print_service_info() {
+  local s="$1"
+  local path="$2"
+  local enabled="$3"
+  local active="$4"
+  local type_color="$5"
+  local package="$6"
+  local date="$7"
+
+  case "$enabled" in
+    enabled) enabled_col="${STATUS_GREEN}$enabled${RESET}" ;;
+    disabled) enabled_col="${STATUS_RED}$enabled${RESET}" ;;
+    static) enabled_col="${STATUS_YELLOW}$enabled${RESET}" ;;
+    *) enabled_col="$enabled" ;;
+  esac
+
+  echo -e "$type_color$s${RESET} [$enabled_col] (active: $active) pkg/user: $package date: $date"
+}
+
+for s in $(systemctl list-unit-files --type=service --no-legend | awk "{print \$1}"); do
+  path=$(systemctl show -p FragmentPath $s 2>/dev/null | cut -d= -f2)
+  enabled=$(systemctl is-enabled $s 2>/dev/null || echo "disabled")
+  active=$(systemctl is-active $s 2>/dev/null || echo "inactive")
+  if [[ -z $path ]]; then path="--"; fi
+  # Determine type
+  if [[ $path == /lib/systemd/system/* ]]; then
+    type_color="$GREEN"
+    package="OS"
+  elif [[ $path == /usr/lib/systemd/system/* ]]; then
+    type_color="$YELLOW"
+    pkgname=$(dpkg -S $path 2>/dev/null | cut -d: -f1)
+    package="${pkgname:-unknown}"
+  elif [[ $path == /etc/systemd/system/* ]]; then
+    type_color="$BLUE"
+    package="user"
+  elif [[ $path == /run/systemd/system/* ]]; then
+    type_color="$CYAN"
+    package="runtime"
+  else
+    type_color="$RESET"
+    package="unknown"
+  fi
+  # Get file modification date
+  if [[ -f $path ]]; then
+    date=$(stat -c "%y" $path | cut -d"." -f1)
+  else
+    date="--"
+  fi
+  print_service_info $s $path $enabled $active $type_color $package $date
+done
+'

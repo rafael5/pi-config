@@ -1,0 +1,40 @@
+# ===== SYSTEM SERVICE SHORTCUTS =====
+
+# Running services
+alias sysctl.running='systemctl list-units --type=service --state=running --no-pager'
+
+# All services (including inactive)
+alias sysctl.all='systemctl list-units --type=service --all --no-pager'
+
+# Failed services
+alias sysctl.failed='systemctl list-units --type=service --state=failed --no-pager'
+
+# Enabled services
+alias sysctl.enabled='systemctl list-unit-files --type=service --state=enabled --no-pager'
+
+# Disabled services
+alias sysctl.disabled='systemctl list-unit-files --type=service --state=disabled --no-pager'
+
+# Recently restarted (last 30 min)
+alias sysctl.recent='journalctl --since "30 minutes ago" --grep="Starting\|Started\|Restarted" --no-pager'
+
+# Real-time journal follow
+alias sysctl.live='journalctl -f'
+
+# Watch running services live
+alias sysctl.watch='watch systemctl list-units --type=service --state=running'
+
+# Service status shortcut (usage: sysctl.status nginx)
+alias sysctl.status='systemctl status'
+
+# Restart service shortcut (usage: sysctl.restart nginx)
+alias sysctl.restart='sudo systemctl restart'
+
+# Start service shortcut
+alias sysctl.start='sudo systemctl start'
+
+# Stop service shortcut
+alias sysctl.stop='sudo systemctl stop'
+
+# Reload service
+alias sysctl.reload='sudo systemctl reload'

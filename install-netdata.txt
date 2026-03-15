@@ -1,0 +1,43 @@
+
+--------------------------------------------------
+ Netdata
+--------------------------------------------------
+
+# apt install:
+sudo apt install netdata
+sudo systemctl enable --now netdata
+
+
+
+# /etc/caddy/Caddyfile
+-------------------------------
+pi5.warg-torino.ts.net {
+
+    tls /var/lib/tailscale/certs/pi5.warg-torino.ts.net.crt \
+        /var/lib/tailscale/certs/pi5.warg-torino.ts.net.key
+
+    encode gzip
+
+    # Reverse proxy /netdata to Netdata
+    handle_path /netdata* {
+        uri strip_prefix /netdata
+        reverse_proxy 127.0.0.1:19999
+    }
+
+    header {
+        Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+        X-Content-Type-Options "nosniff"
+        X-Frame-Options "SAMEORIGIN"
+        Referrer-Policy "no-referrer"
+    }
+}
+ -------------------------------------
+
+
+# test
+sudo lsof -i -P -n | grep LISTEN | grep netdata
+sudo systemctl status netdata
+ 
+
+
+

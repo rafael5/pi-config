@@ -1,0 +1,203 @@
+#------------------------------------------------------------------------------
+# PATH
+#------------------------------------------------------------------------------
+alias path='echo -e ${PATH//:/\\n}' # echo all executable Paths
+alias rehash='hash -r'              # rehashes all available executables in $PATHs after a change
+
+
+#------------------------------------------------------------------------------
+# LIST FILES  (ls || lsd)
+#------------------------------------------------------------------------------
+# If {LSD} command exists, alias ls->lsd
+#type lsd >/dev/null 2>&1 && \
+#    echo "lsd exists; aliasing ls->lsd" && \
+#    alias ls=lsd
+
+alias ls=lsd
+alias ls.='lsd  -d .*'     # short dot
+alias ll='lsd -l'          # short
+alias ll.='lsd -l -d .*'   # short dot
+alias la='lsd -a'          # all
+alias lla='lsd -al'        # all long
+
+# clear screen prior:
+alias cls='c; lsd '
+alias cls.='c; lsd -d .*'    # dot 
+alias cla='c; lsd -a'        # all
+alias cll='c; lsd -l'        # long
+alias cll.='c; lsd -l -d .*' # dot 
+
+
+# ls [-ABCFGHLOPRSTUW@abcdefghiklmnopqrstuwx1]
+# F = FULL: dir/  executable*   symlink@  socket=  whiteout%  FIFO|
+# a = all entries
+# A = all entries except . and ..
+# l = long format
+# G = colorized (unnecessary with LSD)
+# S = sort by size
+# t = sort by time
+
+
+
+#------------------------------------------------------------------------------
+# CHANGE DIRECTORY  (cd)
+#------------------------------------------------------------------------------
+alias c='clear'
+alias ..='cd ..;clear;pwd;ls'
+alias ...='cd ..;cd ..;clear;pwd;ls'
+alias ....='cd ..;cd ..;cd ..;clear;pwd;ls'
+
+# NAVIGATION
+alias home='cd ~ ; pwd'
+# alias finder.downloads="cd ~/Downloads;pwd"
+# alias finder.desktop="cd ~/Desktop;pwd"
+# alias finder.documents="cd ~/Documents;pwd"
+
+
+
+#------------------------------------------------------------------------------
+# FIND
+# ---------------------------------------------------------------------------
+alias find.quick='find . -name '                # quickly search for file
+alias find.fuzzy='fzf'
+
+
+
+
+#------------------------------------------------------------------------------
+# TREE (tree)
+#------------------------------------------------------------------------------
+alias tree1='tree -L 1'
+alias tree2='tree -L 2'
+alias tree3='tree -L 3'
+
+# directories only
+alias tree1d='tree -L 1 -d'
+alias tree2d='tree -L 2 -d'
+alias tree3d='tree -L 3 -d'
+
+
+
+#------------------------------------------------------------------------------
+# RANGER
+# ---------------------------------------------------------------------------
+alias ranger.manual='open https://github.com/ranger/ranger/wiki/Official-user-guide'
+
+
+#------------------------------------------------------------------------------
+# OPTIONS:                                  preferred options for of UNIX commands
+#------------------------------------------------------------------------------
+alias show_options='shopt'                  # display bash options settings
+alias fix_stty='stty sane'                  # Restore terminal settings when screwed up
+
+# safety
+alias rm='trash'
+
+# file management
+alias mv='mv -i'                            # require confirmation
+alias cp='cp -i'
+alias ln='ln -i'
+alias cp='cp -iv'                           
+alias mv='mv -iv'                           
+alias mkdir='mkdir -pv'                     
+
+# permissions
+alias chown='chown --preserve-root'         #parenting changing perms on
+alias chmod='chmod --preserve-root'
+alias chgrp='chgrp --preserve-root'
+alias chmod+x='sudo chmod +x'
+
+alias less='less -FSRXc'                    
+alias nano='nano -W'                        
+alias wget='wget -c'                        # resume download by default
+alias grep='grep --color=auto'              # colorize grep command
+
+
+
+
+#------------------------------------------------------------------------------
+# Google search
+#------------------------------------------------------------------------------
+# Command to open the webbrowser and immediately start searching
+# for the right keyword.
+#
+# Usage:
+#   $ google test query
+#   $ => Opens the browser on http://www.google.com/search?q=test+query
+
+google()
+{
+    local s="$_"
+    local query=
+
+    case "$1" in
+        '')   ;;
+        that) query="search?q=${s//[[:space:]]/+}" ;;
+        *)    s="$*"; query="search?q=${s//[[:space:]]/+}" ;;
+    esac
+
+    open /Applications/Firefox\ Nightly.app "http://www.google.com/${query}"
+}
+
+
+
+
+#------------------------------------------------------------------------------
+# DISK USAGE (du; df)
+#------------------------------------------------------------------------------
+alias disk.cmd='echo "df  df-depth1  du-short"'
+alias disk.free='echo "disk space free - human readable"; df -h'
+alias disk.usage.depth1='echo "disk usage - depth 1 - human readable"; du -d 1 -h'
+alias disk.usage.short='echo "disk usage - short - human readable"; du -sh *'
+
+
+
+
+#------------------------------------------------------------------------------
+# LIST OPEN FILES (lsof)  -  "Everything is a file"
+#------------------------------------------------------------------------------
+# An open file may be a:
+# 1. file
+# 2. block
+# 3. character
+# 4. directory
+# 5. text reference
+# 6. library
+# 7. network socket or stream:  UDP, TCP, IP, UNIX
+
+# Internet socket: IPv4, IPv6; NFS file; or UNIX domain socket.
+# REG CHR DIR  IPv4 IPv6 unix PIPE systm 
+
+alias lsof='lsof -i -n | sort'
+alias lsof.TCP='lsof -i | grep LISTEN | grep "TCP \*:" | sort'
+alias lsof.OPEN='lsof -i | grep ESTABLISHED | sort'
+alias lsof.LISTEN='lsof -i -P | grep LISTEN | sort'
+alias lsof.UDP='lsof -nP | grep UDP'  # display open UDP sockets
+alias lsof.TCP='lsof -nP | grep TCP'  # display open TCP sockets
+alias lsof.TCPIP='lsof -i'            # all open TCP/IP sockets
+alias lsof.port8080='echo "sudo lsof -i :8080"; sudo lsof -i :8080'
+
+
+# kill process on certain port
+# https://www.codegrepper.com/code-examples/shell/kill+process+on+port+8080+mac
+alias kill-PID='echo "sudo kill -9 <PID>"'
+
+
+
+
+
+#------------------------------------------------------------------------------
+# WORD COUNT (wc)
+#------------------------------------------------------------------------------
+alias wc.hidden='echo $(ls -1 | wc -l)'    # count of non-hidden files in current dir
+alias wc.chars='wc -c'                     # count chars in file
+alias wc.words='wc -w'                     # count words in file
+alias wc.lines='wc -l'                     # count lines in file
+
+#------------------------------------------------------------------------------
+# Weather
+#------------------------------------------------------------------------------
+alias weather='curl http://wttr.in/'
+
+
+

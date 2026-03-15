@@ -1,0 +1,46 @@
+Raspberry Pi Service Config & Systemctl Info
+============================================
+
+Podman:
+-------
+- Root storage:       /var/lib/containers/            root:root 755
+- User storage:       ~/.local/share/containers/      user:user 755
+- Runtime (socket):   /run/containers/               root:root 755
+- Config:             /etc/containers/               root:root 755
+- Logs:               /var/log/containers/           via journalctl -u podman
+- Systemd service:    /usr/lib/systemd/system/podman.service  root:root 644
+- User service:       ~/.config/systemd/user/        user:user 755
+- Systemctl status:   systemctl status podman
+- Systemctl enable:   systemctl enable podman
+- Help / info:        man podman; podman info; podman --help
+
+Tailscale:
+----------
+- State & keys:       /var/lib/tailscale/            root:tailscale 700
+- TLS certs:          /var/lib/tailscale/certs/      root:tailscale 600
+- Systemd service:    /lib/systemd/system/tailscaled.service  root:root 644
+- Config override:    /etc/default/tailscaled        root:root 644
+- Logs:               journalctl -u tailscaled
+- Systemctl status:   systemctl status tailscaled
+- Systemctl enable:   systemctl enable tailscaled
+- Help / info:        tailscale status; tailscale ip; tailscale up --help
+
+Caddy:
+------
+- Global config:      /etc/caddy/Caddyfile           root:caddy 644
+- Data / certs:       /var/lib/caddy/                root:caddy 755
+- User config:        ~/.config/caddy/               user:user 755
+- Systemd service:    /etc/systemd/system/caddy.service  root:root 644
+- Alternative service:/lib/systemd/system/caddy.service root:root 644
+- Logs:               journalctl -u caddy
+- Systemctl status:   systemctl status caddy
+- Systemctl enable:   systemctl enable caddy
+- Help / info:        caddy help; caddy version; caddy list-modules
+
+Notes:
+------
+- Tailscale & Caddy dirs must remain root-only; use sudo to inspect.
+- Podman rootless dirs are user-owned; system dirs are root-owned.
+- Use journalctl -u <service> to read runtime logs.
+- Systemctl commands show LOAD/ACTIVE/SUB status, enable/disable state.
+- Help commands provide documentation and status info for each tool.

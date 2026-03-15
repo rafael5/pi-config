@@ -1,0 +1,193 @@
+Raspberry Pi Installation Sequence
+
+
+==================================================
+1. Update System
+==================================================
+sudo apt update && sudo apt upgrade -y
+sudo reboot
+
+Notes:
+- Ensures all core OS packages are up-to-date.
+- Prevents conflicts during later installations.
+
+
+
+
+
+
+==================================================
+2. Install Podman (Container Runtime)
+==================================================
+sudo apt install -y podman
+
+Optional: Enable rootless mode for user
+sudo loginctl enable-linger $USER
+
+Post-install checks:
+podman info
+
+Notes:
+- Podman is used to run containerized apps.
+- Rootless mode avoids running containers as root.
+
+
+
+
+
+==================================================
+3. Install Tailscale (VPN for Secure Remote Access)
+==================================================
+curl -fsSL https://tailscale.com/install.sh | sh
+sudo tailscaled --state=/var/lib/tailscale/tailscaled.state
+
+Generate re-usable tailscale auth key (need to do each 90 days)
+https://login.tailscale.com/admin/settings/keys
+TAILSCALE_AUTH_KEY=tskey-auth-k94ZT9e6j911CNTRL-LT9WbN2vZfjyLJY7bWsAfjVnXzi1i3Tvb
+
+
+Connect to Tailscale network:
+sudo tailscale up --auth-key=<TAILSCALE_AUTH_KEY> --hostname=pi5 --accept-routes
+
+
+Note:
+-auth-key=... → authorizes this Pi on your Tailscale network.
+--hostname=pi5 → sets the machine name shown in the Tailscale admin console.
+--accept-routes → allows this device to accept subnet routes 
+(optional; only needed if you plan to route network traffic through this Pi).
+
+
+Post-install checks:
+tailscale status
+tailscale ip
+
+Start tailscale at boot:
+sudo systemctl enable tailscaled
+sudo systemctl start tailscaled
+
+Notes:
+- Provides secure remote access.
+- Must be running before Caddy if using Tailscale certs.
+
+
+
+
+==================================================
+4. Install Caddy (Reverse Proxy / HTTPS)
+==================================================
+sudo apt install -y debian-keyring debian-archive-keyring apt-transport-https
+curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.sh' | sudo bash
+sudo apt install caddy
+
+
+# Edit Caddyfile to enable reverse proxy and HTTPS:
+sudo micro /etc/caddy/Caddyfile:
+--------------------------------
+pi5.warg-torino.ts.net {
+    # Use Tailscale-provided TLS certs
+    tls /var/lib/tailscale/certs/pi5.warg-torino.ts.net.crt \
+        /var/lib/tailscale/certs/pi5.warg-torino.ts.net.key
+
+    encode gzip
+
+    handle_path /[SERVICE_NAME]* {
+        reverse_proxy 127.0.0.1:8080
+    }
+
+    header {
+        Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+        X-Content-Type-Options "nosniff"
+        X-Frame-Options "SAMEORIGIN"
+        Referrer-Policy "no-referrer"
+    }
+}
+--------------------------------
+
+
+
+# Fix /var/lib/tailscale/certs directory ownership and permissions
+# change each file and folder individually; wildcards (*) dont work !!
+sudo chown -R root:caddy /var/lib/tailscale/certs
+sudo chmod 750 /var/lib/tailscale/certs
+sudo chmod 640 /var/lib/tailscale/certs/pi5.warg-torino.ts.net.crt
+sudo chmod 640 /var/lib/tailscale/certs/pi5.warg-torino.ts.net.key
+
+
+Validate Caddyfile (as root; checks syntax and if certs are readable):
+sudo caddy validate --config /etc/caddy/Caddyfile
+
+# Validate Caddyfile as caddy user (for systemd setup)
+sudo -u caddy caddy validate --config /etc/caddy/Caddyfile
+
+
+Reload Caddy to apply TLS:
+sudo systemctl reload caddy
+
+# Reload and restart Caddy
+sudo systemctl daemon-reload
+sudo systemctl restart caddy
+
+
+Post-install checks:
+sudo systemctl status caddy
+curl -k https://pi5.warg-torino.ts.net
+
+
+Notes:
+- Caddy terminates HTTPS and proxies requests to services.
+- Use Tailscale certificates for secure access.
+
+
+
+
+
+==================================================
+5. Install Additional Services / Apps
+==================================================
+Example containerized apps via Podman:
+podman run -d --name jellyfin -p 8096:8096 jellyfin/jellyfin
+podman run -d --name nextcloud -p 8080:80 nextcloud
+
+
+
+Caddyfile: add reverse proxies:
+-----------------------------
+handle_path /nextcloud* {
+    reverse_proxy 127.0.0.1:8080
+}
+handle_path /jellyfin* {
+    reverse_proxy 127.0.0.1:8096
+}
+------------------------------
+
+
+
+Notes:
+- Always install apps after Podman and Caddy are ready.
+- Reverse proxy ensures all services are accessible via HTTPS.
+
+
+
+
+==================================================
+6. Enable and Start Services
+==================================================
+
+sudo systemctl enable tailscaled
+sudo systemctl enable caddy
+sudo systemctl start tailscaled
+sudo systemctl start caddy
+
+Notes:
+- Ensures services restart automatically on boot.
+- Correct startup order: Tailscale → Caddy → apps.
+
+7. Verification
+---------------
+systemctl status tailscaled caddy podman
+tailscale status
+curl https://pi5.warg-torino.ts.net/health
+
+Notes:
+- Confirm all services are running and reachable.
+- Check network reachability via Tailscale.

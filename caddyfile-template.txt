@@ -1,0 +1,73 @@
+# ================================================
+# Caddyfile - Pi5 Tailscale Reverse Proxy Template
+# ================================================
+
+pi5.warg-torino.ts.net {
+
+    # Use Tailscale TLS certificates
+    tls /var/lib/tailscale/certs/pi5.warg-torino.ts.net.crt \
+        /var/lib/tailscale/certs/pi5.warg-torino.ts.net.key
+
+    encode gzip
+
+    # --------------------------
+    # Netdata Service
+    # --------------------------
+    handle_path /netdata* {
+        reverse_proxy 127.0.0.1:19999
+    }
+
+    # --------------------------
+    # VS Code Service
+    # --------------------------
+    handle_path /vscode* {
+        reverse_proxy 127.0.0.1:8443
+    }
+
+    # --------------------------
+    # Security Headers
+    # --------------------------
+    header {
+        Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+        X-Content-Type-Options "nosniff"
+        X-Frame-Options "SAMEORIGIN"
+        Referrer-Policy "no-referrer"
+    }
+
+    # Optional: log requests
+    log {
+        output file /var/log/caddy/access.log
+        format json
+    }
+}
+
+
+# ==========================================================
+# Notes on Usage (for reference)
+# ==========================================================
+# 1. Internal Ports
+#    - Netdata: 19999
+#    - VS Code: 8443
+#    Make sure your Podman containers are bound to 127.0.0.1 on these ports.
+#
+# 2. TLS Certificates
+#    - Must be readable by 'caddy' user (root:caddy, chmod 640)
+#    - Directories: /var/lib/tailscale and /var/lib/tailscale/certs → chmod 750
+#
+# 3. Adding More Services
+#    - Assign unique internal port
+#    - Add new 'handle_path /service*' block pointing to that port
+#    - Reload Caddy:
+#        sudo systemctl reload caddy
+#
+# 4. Logging
+#    - Logs are in /var/log/caddy/access.log
+#    - Useful for debugging and monitoring service access
+#
+# 5. Validation Before Reload
+#    sudo -u caddy caddy validate --config /etc/caddy/Caddyfile
+#
+# ==========================================================
+
+
+

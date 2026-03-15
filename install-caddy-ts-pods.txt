@@ -1,0 +1,90 @@
+=============================================
+Raspberry Pi5 - Tailscale / Caddy / Podman Setup
+=============================================
+
+1️⃣ Architectural Principles
+---------------------------
+
+1. Caddy owns HTTPS (port 443)
+   - TLS termination handled by Caddy only
+   - Reverse proxies traffic to internal Podman services
+
+2. Tailscale provides network connectivity only
+   - Do not bind Tailscale to port 443
+   - Tailscale should never serve web content directly
+
+3. Podman services run on internal ports
+   - Each service has its own port (e.g., Netdata → 19999, VS Code → 8443)
+
+4. Caddy reverse proxies `/service-path` → internal service
+   - Examples:
+     /netdata → Netdata
+     /vscode  → VS Code
+   - Additional services follow same pattern
+
+5. Permissions & Certificates
+   - Caddy must read Tailscale certs:
+     /var/lib/tailscale/certs/*.crt / *.key
+       owner: root:caddy, chmod 640
+     /var/lib/tailscale and /certs directories
+       chmod 750
+   - Caddy runs as user `caddy`
+
+6. Podman Networking
+   - Use a dedicated Podman network
+   - Containers can reference each other by name
+
+7. Scalable & Version-Controlled
+   - Each service can be added, updated, removed independently
+   - Caddyfile and other configs stored in ~/admin/configs
+   - Version control via GitHub or local git repo
+
+---------------------------------------------
+2️⃣ Installation & Startup Sequence
+---------------------------------------------
+
+Step 1: Install Caddy
+   - Configure TLS using Tailscale certs or Let's Encrypt
+   - Validate config:
+     sudo -u caddy caddy validate --config /etc/caddy/Caddyfile
+   - Start and enable:
+     sudo systemctl enable --now caddy
+
+Step 2: Install Tailscale
+   - Connect Pi to your Tailscale network:
+     sudo tailscale up --hostname=pi5 --accept-routes
+   - Ensure Tailscale does not serve on port 443
+
+Step 3: Install Podman
+   - Install podman package
+   - Create dedicated network for containers:
+     podman network create caddy_net
+   - Set up volumes for persistent service data
+
+Step 4: Start Podman Services Incrementally
+   - Run each service on an internal port
+     Example for Netdata:
+       podman run -d --name netdata --network caddy_net \
+           -p 127.0.0.1:19999:19999 netdata/netdata
+   - Add reverse proxy entry in Caddyfile
+   - Reload Caddy after adding each service:
+       sudo systemctl reload caddy
+
+Step 5: Future Service Management
+   - Assign unique internal port for each new service
+   - Add corresponding handle_path block in Caddyfile
+   - Reload Caddy
+   - No interference with existing services
+
+---------------------------------------------
+✅ Notes / Best Practices
+---------------------------------------------
+- Do not run multiple TLS servers on port 443 (avoid Tailscale serve conflicts)
+- Always validate Caddyfile before reload
+- Keep all config files under version control
+- Use dedicated Podman network to avoid port conflicts
+- Caddy must always have read access to Tailscale certs
+- Incrementally add services to simplify troubleshooting
+
+=============================================
+
