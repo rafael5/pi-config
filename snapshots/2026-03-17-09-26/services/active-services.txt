@@ -1,0 +1,81 @@
+  UNIT                                                        LOAD   ACTIVE SUB     DESCRIPTION
+  accounts-daemon.service                                     loaded active running Accounts Service
+  alsa-restore.service                                        loaded active exited  Save/Restore Sound Card State
+  anydesk.service                                             loaded active running AnyDesk
+  blk-availability.service                                    loaded active exited  Availability of block devices
+  colord.service                                              loaded active running Manage, Install and Generate Color Profiles
+  connman-wait-online.service                                 loaded active exited  Wait for network to be configured by ConnMan
+  connman.service                                             loaded active running Connection service
+  console-setup.service                                       loaded active exited  Set console font and keymap
+  cron.service                                                loaded active running Regular background program processing daemon
+  ctxcwalogd.service                                          loaded active running Citrix Log Daemon Service
+  dbus.service                                                loaded active running D-Bus System Message Bus
+  dphys-swapfile.service                                      loaded active exited  dphys-swapfile - set up, mount/unmount, and delete a swap file
+  dundee.service                                              loaded active running DUN service
+  fake-hwclock.service                                        loaded active exited  Restore / save the current clock
+  getty@tty1.service                                          loaded active running Getty on tty1
+  glamor-test.service                                         loaded active exited  Check for glamor
+  haveged.service                                             loaded active running Entropy Daemon based on the HAVEGE algorithm
+  ifupdown-pre.service                                        loaded active exited  Helper to synchronize boot up for ifupdown
+  keyboard-setup.service                                      loaded active exited  Set the console keyboard layout
+  kmod-static-nodes.service                                   loaded active exited  Create List of Static Device Nodes
+  libvirt-guests.service                                      loaded active exited  Suspend/Resume Running libvirt Guests
+  lightdm.service                                             loaded active running Light Display Manager
+  lm-sensors.service                                          loaded active exited  Initialize hardware monitoring sensors
+  lvm2-monitor.service                                        loaded active exited  Monitoring of LVM2 mirrors, snapshots etc. using dmeventd or progress polling
+  ModemManager.service                                        loaded active running Modem Manager
+  netdata.service                                             loaded active running netdata - Real-time performance monitoring
+  networking.service                                          loaded active exited  Raise network interfaces
+  NetworkManager-wait-online.service                          loaded active exited  Network Manager Wait Online
+  NetworkManager.service                                      loaded active running Network Manager
+  ofono.service                                               loaded active running Telephony service
+  plymouth-quit-wait.service                                  loaded active exited  Hold until boot process finishes up
+  plymouth-read-write.service                                 loaded active exited  Tell Plymouth To Write Out Runtime Data
+  plymouth-start.service                                      loaded active exited  Show Plymouth Boot Screen
+  podman-restart.service                                      loaded active exited  Podman Start All Containers With Restart Policy Set To Always
+  polkit.service                                              loaded active running Authorization Manager
+  rc-local.service                                            loaded active exited  /etc/rc.local Compatibility
+  rp1-test.service                                            loaded active exited  Check for RP1 displays for Xorg
+  rpc-statd-notify.service                                    loaded active exited  Notify NFS peers of a restart
+  rpi-eeprom-update.service                                   loaded active exited  Check for Raspberry Pi EEPROM updates
+  rtkit-daemon.service                                        loaded active running RealtimeKit Scheduling Policy Service
+  rustdesk.service                                            loaded active running RustDesk
+  serial-getty@ttyAMA10.service                               loaded active running Serial Getty on ttyAMA10
+  smartmontools.service                                       loaded active running Self Monitoring and Reporting Technology (SMART) Daemon
+  snapd.seeded.service                                        loaded active exited  Wait until snapd is fully seeded
+  snapd.service                                               loaded active running Snap Daemon
+  ssh.service                                                 loaded active running OpenBSD Secure Shell server
+  systemd-binfmt.service                                      loaded active exited  Set Up Additional Binary Formats
+  systemd-fsck@dev-disk-by\x2dpartuuid-c2b1ba03\x2d01.service loaded active exited  File System Check on /dev/disk/by-partuuid/c2b1ba03-01
+  systemd-journal-flush.service                               loaded active exited  Flush Journal to Persistent Storage
+  systemd-journald.service                                    loaded active running Journal Service
+  systemd-logind.service                                      loaded active running User Login Management
+  systemd-machined.service                                    loaded active running Virtual Machine and Container Registration Service
+  systemd-modules-load.service                                loaded active exited  Load Kernel Modules
+  systemd-random-seed.service                                 loaded active exited  Load/Save Random Seed
+  systemd-remount-fs.service                                  loaded active exited  Remount Root and Kernel File Systems
+  systemd-sysctl.service                                      loaded active exited  Apply Kernel Variables
+  systemd-sysusers.service                                    loaded active exited  Create System Users
+  systemd-timesyncd.service                                   loaded active running Network Time Synchronization
+  systemd-tmpfiles-setup-dev.service                          loaded active exited  Create Static Device Nodes in /dev
+  systemd-tmpfiles-setup.service                              loaded active exited  Create System Files and Directories
+  systemd-udev-trigger.service                                loaded active exited  Coldplug All udev Devices
+  systemd-udevd.service                                       loaded active running Rule-based Manager for Device Events and Files
+  systemd-update-utmp.service                                 loaded active exited  Record System Boot/Shutdown in UTMP
+  systemd-user-sessions.service                               loaded active exited  Permit User Sessions
+  tailscaled.service                                          loaded active running Tailscale node agent
+  teamviewerd.service                                         loaded active running TeamViewer remote control daemon
+  udisks2.service                                             loaded active running Disk Manager
+  ufw.service                                                 loaded active exited  Uncomplicated firewall
+  unattended-upgrades.service                                 loaded active running Unattended Upgrades Shutdown
+  upower.service                                              loaded active running Daemon for power management
+  user-runtime-dir@1000.service                               loaded active exited  User Runtime Directory /run/user/1000
+  user@1000.service                                           loaded active running User Manager for UID 1000
+  wayvnc-control.service                                      loaded active running VNC Control Service
+  wayvnc.service                                              loaded active running VNC Server
+  wpa_supplicant.service                                      loaded active running WPA supplicant
+
+LOAD   = Reflects whether the unit definition was properly loaded.
+ACTIVE = The high-level unit activation state, i.e. generalization of SUB.
+SUB    = The low-level unit activation state, values depend on unit type.
+75 loaded units listed.

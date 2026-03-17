@@ -111,7 +111,7 @@ DOTFILES=(
   ".bash_aliases"
   ".gitconfig"
   ".gitignore"
-  ".vimrc"
+  ".claude.json"
   ".nanorc"
   ".tmux.conf"
   ".inputrc"
