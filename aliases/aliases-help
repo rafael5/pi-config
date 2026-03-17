@@ -1,15 +1,49 @@
-# ~/.aliases-info
 # ==================================
-# Command Information / Cheat Sheet
-# Prefix: info.*
-# First item = primary documentation URL
+# Aliases: Command Cheatsheet
 # ==================================
+
+
+# help
+# -----------------------------
+alias help.main='echo "
+
+disk		duf
+data		b4p visicalc
+
+cmds		status. sysctl. tool.|  pod. git. ts. 
+"'
+
+
+
+# -----------------------------
+# Status checks
+# -----------------------------
+alias status.netdata='systemctl is-active netdata && ss -tulpn | grep 19999'
+alias status.tailscale='tailscale status'
+alias status.watchdog='systemctl is-active watchdog'
+alias status.ssh='systemctl is-active ssh'
+alias status.network='ip a && ping -c2 1.1.1.1'
+alias status.disk='df -h /'
+alias status.memory='free -h'
+alias status.cpu='uptime && top -bn1 | head -n5'
+alias status.temp='vcgencmd measure_temp'
+alias status.throttle='vcgencmd get_throttled'
+alias status.services='systemctl --failed'
+alias status.logs='journalctl -p 3 -xb | tail'
+alias status.nvme='sudo nvme smart-log /dev/nvme0'
+alias status.netdata.web='curl -I http://localhost:19999'
+alias status.tailscale.ip='tailscale ip -4'
+alias status.tailscale.ping='tailscale ping pi5.warg-torino.ts.net'
+alias status.ports='ss -tulpn'
+alias status.load='cat /proc/loadavg'
+alias status.uptime='uptime -p'
+alias status.kernel='uname -a'
 
 
 # -----------------------------
 # Terminator
 # -----------------------------
-alias info.terminator='echo "
+alias help.terminator='echo "
 Terminator — Commands / Shortcuts (Most Useful)
 
 Docs:
@@ -45,7 +79,7 @@ Config / Files:
 # -----------------------------
 # Git
 # -----------------------------
-alias info.git='echo "
+alias help.git='echo "
 Git — Commands (Most Useful)
 
 Docs:
@@ -81,7 +115,7 @@ https://git-scm.com/docs
 # -----------------------------
 # Docker
 # -----------------------------
-alias info.docker='echo "
+alias help.docker='echo "
 Docker — Commands (Most Useful)
 
 Docs:
@@ -110,7 +144,7 @@ https://docs.docker.com/reference/
 # -----------------------------
 # Podman
 # -----------------------------
-alias info.podman='echo "
+alias help.podman='echo "
 Podman — Commands (Most Useful)
 
 Docs:
@@ -136,7 +170,7 @@ https://docs.podman.io/en/latest/Commands.html
 # -----------------------------
 # SSH
 # -----------------------------
-alias info.ssh='echo "
+alias help.ssh='echo "
 SSH — Commands (Most Useful)
 
 Docs:
