@@ -1,4 +1,0 @@
-Types: deb
-URIs: https://Pi-Apps-Coders.github.io/box64-debs/debian
-Suites: ./
-Signed-By: /usr/share/keyrings/box64-archive-keyring.gpg

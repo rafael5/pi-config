@@ -1,0 +1,7 @@
+100.126.161.11  pi5      rafael5@  linux    -                                                           
+100.98.64.54    glnet    rafael5@  linux    -                                                           
+100.107.77.10   mac-rmr  rafael5@  macOS    active; direct 192.168.1.190:41641, tx 12321384 rx 2303856  
+100.65.84.34    pixel-8  rafael5@  android  -                                                           
+
+# Health check:
+#     - System DNS config not ideal. /etc/resolv.conf overwritten. See https://tailscale.com/s/dns-fight

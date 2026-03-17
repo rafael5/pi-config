@@ -1,7 +1,0 @@
-# Raspberry Pi uptime toolkit
-
-0 * * * * /usr/local/pi-tools/health-check.sh
-*/5 * * * * /usr/local/pi-tools/network-watch.sh
-*/10 * * * * /usr/local/pi-tools/memory-watch.sh
-0 3 * * 0 apt-get autoremove -y && apt-get clean
-30 2 * * * /usr/sbin/logrotate /etc/logrotate.conf

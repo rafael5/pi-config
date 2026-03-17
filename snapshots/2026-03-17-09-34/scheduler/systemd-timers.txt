@@ -1,0 +1,16 @@
+NEXT                        LEFT          LAST                        PASSED       UNIT                         ACTIVATES
+Tue 2026-03-17 09:34:50 EDT 28s left      Tue 2026-03-17 09:33:50 EDT 31s ago      rfkill-monitor.timer         rfkill-monitor.service
+Tue 2026-03-17 09:39:00 EDT 4min 37s left Tue 2026-03-17 09:09:21 EDT 25min ago    phpsessionclean.timer        phpsessionclean.service
+Tue 2026-03-17 19:03:59 EDT 9h left       Mon 2026-03-16 19:03:59 EDT 14h ago      systemd-tmpfiles-clean.timer systemd-tmpfiles-clean.service
+Tue 2026-03-17 19:43:51 EDT 10h left      Tue 2026-03-17 09:31:31 EDT 2min 50s ago apt-daily.timer              apt-daily.service
+Wed 2026-03-18 00:00:00 EDT 14h left      Tue 2026-03-17 00:00:01 EDT 9h ago       dpkg-db-backup.timer         dpkg-db-backup.service
+Wed 2026-03-18 00:00:00 EDT 14h left      Tue 2026-03-17 00:00:01 EDT 9h ago       exim4-base.timer             exim4-base.service
+Wed 2026-03-18 00:00:00 EDT 14h left      Tue 2026-03-17 00:00:01 EDT 9h ago       logrotate.timer              logrotate.service
+Wed 2026-03-18 00:02:19 EDT 14h left      Tue 2026-03-17 00:12:21 EDT 9h ago       podman-auto-update.timer     podman-auto-update.service
+Wed 2026-03-18 06:00:47 EDT 20h left      Tue 2026-03-17 06:33:36 EDT 3h 0min ago  apt-daily-upgrade.timer      apt-daily-upgrade.service
+Wed 2026-03-18 07:06:27 EDT 21h left      Tue 2026-03-17 08:45:24 EDT 48min ago    man-db.timer                 man-db.service
+Sun 2026-03-22 03:10:53 EDT 4 days left   Sun 2026-03-15 03:10:42 EDT 2 days ago   e2scrub_all.timer            e2scrub_all.service
+Mon 2026-03-23 00:21:06 EDT 5 days left   Mon 2026-03-16 00:48:00 EDT 1 day 8h ago fstrim.timer                 fstrim.service
+
+12 timers listed.
+Pass --all to see loaded but inactive timers, too.

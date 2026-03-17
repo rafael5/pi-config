@@ -1,23 +1,22 @@
 #!/usr/bin/env bash
 
 # -----------------------------------------------------------------------------
-# Snapshot Script: Application, Services, Config Files, Dotfiles, and System State
-# (APT + systemd + /etc top-level files + allowlisted dotfiles + OS/kernel +
-#  scheduler + Docker)
+# Snapshot Script: Comprehensive System State (Packages, Services, Configs, 
+# Dotfiles, OS/Kernel, Scheduler, Docker, Podman, Tailscale)
 #
-# This script creates a timestamped snapshot of the system’s key application,
-# service, configuration, and runtime state under:
+# This script creates a timestamped snapshot of the system’s state under:
 #   ~/pi-config/snapshots/YYYY-MM-DD-HH-MM/
 #
 # Purpose:
 #   - Track and diff installed packages over time
 #   - Monitor active and enabled services
 #   - Capture top-level system configuration files from /etc
-#   - Capture selected user-level configuration via safe dotfiles
-#   - Capture kernel and OS metadata for reproducibility
-#   - Capture scheduled jobs (cron + systemd timers)
-#   - Capture Docker state (containers, images, volumes)
-#   - Enable auditing, troubleshooting, and partial system reconstruction
+#   - Capture selected user-level configuration via allowlisted dotfiles
+#   - Record kernel and OS metadata
+#   - Record scheduled jobs (cron + systemd timers)
+#   - Record container runtime state (Docker + Podman)
+#   - Record Tailscale configuration for reproducibility
+#   - Enable auditing, troubleshooting, rollback, and partial system reconstruction
 #
 # Snapshot filesystem:
 #   ~/pi-config/snapshots/YYYY-MM-DD-HH-MM/
@@ -30,40 +29,43 @@
 #   │       └─ sources.list.d/
 #   │
 #   ├─ config/
-#   │   └─ etc/                   # Top-level files only (no subdirs)
+#   │   └─ etc/                   # Top-level files from /etc only
 #   │
 #   ├─ home/
-#   │   └─ dotfiles/              # Allowlisted user config files only
+#   │   └─ dotfiles/              # Allowlisted user dotfiles
 #   │
 #   ├─ services/
 #   │   ├─ active-services.txt
 #   │   └─ enabled-services.txt
 #   │
 #   ├─ system/
-#   │   ├─ uname.txt              # Kernel version and architecture
+#   │   ├─ uname.txt              # Kernel and architecture
 #   │   └─ os-release.txt         # OS distribution metadata
 #   │
 #   ├─ scheduler/
-#   │   ├─ user-cron.txt          # User crontab
-#   │   ├─ root-cron.txt          # Root crontab
-#   │   └─ systemd-timers.txt     # systemd timers
+#   │   ├─ user-cron.txt
+#   │   ├─ root-cron.txt
+#   │   └─ systemd-timers.txt
 #   │
-#   └─ docker/
-#       ├─ containers.txt         # docker ps -a
-#       ├─ images.txt             # docker images
-#       └─ volumes.txt            # docker volume ls
+#   ├─ docker/
+#   │   ├─ containers.txt
+#   │   ├─ images.txt
+#   │   └─ volumes.txt
+#   │
+#   ├─ podman/
+#   │   ├─ containers.txt
+#   │   ├─ images.txt
+#   │   └─ volumes.txt
+#   │
+#   └─ tailscale/
+#       └─ status.txt
 #
 # Security Model:
-#   - Dotfiles use an explicit allowlist (no wildcards)
-#   - Prevents inclusion of sensitive files (.bash_history, .ssh, tokens, etc.)
-#   - /etc capture limited to top-level files only
-#   - No secrets, credentials, or private keys intentionally captured
-#   - Unreadable or restricted files are skipped safely
-#   - Docker and scheduler outputs are metadata-only (no secrets expected)
-#
-# Notes:
-#   - This is a “state snapshot” tool, not a full backup solution
-#   - Designed for diffing, auditing, and reproducibility
+#   - Only allowlisted dotfiles are captured (no wildcards)
+#   - /etc capture limited to top-level files to reduce risk
+#   - Docker, Podman, and Tailscale captures are metadata/config only
+#   - Secrets (tokens, private keys) are excluded by default
+#   - Unreadable files are skipped safely
 # -----------------------------------------------------------------------------
 
 set -euo pipefail
@@ -81,6 +83,8 @@ mkdir -p "$SNAP_DIR/home/dotfiles"
 mkdir -p "$SNAP_DIR/system"
 mkdir -p "$SNAP_DIR/scheduler"
 mkdir -p "$SNAP_DIR/docker"
+mkdir -p "$SNAP_DIR/podman"
+mkdir -p "$SNAP_DIR/tailscale"
 
 ########################################
 # PACKAGES
@@ -111,16 +115,14 @@ DOTFILES=(
   ".bash_aliases"
   ".gitconfig"
   ".gitignore"
-  ".claude.json"
+  ".vimrc"
   ".nanorc"
   ".tmux.conf"
   ".inputrc"
 )
 
 for file in "${DOTFILES[@]}"; do
-  if [[ -f "$HOME/$file" ]]; then
-    cp "$HOME/$file" "$SNAP_DIR/home/dotfiles/"
-  fi
+  [[ -f "$HOME/$file" ]] && cp "$HOME/$file" "$SNAP_DIR/home/dotfiles/"
 done
 
 # Optional safe sub-config
@@ -152,7 +154,7 @@ sudo crontab -l > "$SNAP_DIR/scheduler/root-cron.txt" 2>/dev/null || true
 sudo systemctl list-timers > "$SNAP_DIR/scheduler/systemd-timers.txt"
 
 ########################################
-# DOCKER (IF INSTALLED)
+# DOCKER
 ########################################
 
 docker ps -a > "$SNAP_DIR/docker/containers.txt" 2>/dev/null || true
@@ -160,7 +162,21 @@ docker images > "$SNAP_DIR/docker/images.txt" 2>/dev/null || true
 docker volume ls > "$SNAP_DIR/docker/volumes.txt" 2>/dev/null || true
 
 ########################################
+# PODMAN
+########################################
+
+podman ps -a > "$SNAP_DIR/podman/containers.txt" 2>/dev/null || true
+podman images > "$SNAP_DIR/podman/images.txt" 2>/dev/null || true
+podman volume ls > "$SNAP_DIR/podman/volumes.txt" 2>/dev/null || true
+
+########################################
+# TAILSCALE
+########################################
+
+tailscale status > "$SNAP_DIR/tailscale/status.txt" 2>/dev/null || true
+
+########################################
 # DONE
 ########################################
 
-echo "Snapshot created at: $SNAP_DIR"
+echo "Comprehensive snapshot created at: $SNAP_DIR"

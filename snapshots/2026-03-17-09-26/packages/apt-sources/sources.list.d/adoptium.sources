@@ -1,5 +1,0 @@
-Types: deb
-URIs: https://adoptium.jfrog.io/artifactory/deb
-Suites: bookworm
-Components: main
-Signed-By: /usr/share/keyrings/adoptium-archive-keyring.gpg
