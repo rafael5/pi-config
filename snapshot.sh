@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
 
 # -----------------------------------------------------------------------------
-# Snapshot Script: Application, Services, Config Files, and User Dotfiles
-# (APT + systemd + /etc top-level files + allowlisted $HOME dotfiles)
+# Snapshot Script: Application, Services, Config Files, Dotfiles, and System State
+# (APT + systemd + /etc top-level files + allowlisted dotfiles + OS/kernel +
+#  scheduler + Docker)
 #
 # This script creates a timestamped snapshot of the system’s key application,
-# service, and configuration state under:
+# service, configuration, and runtime state under:
 #   ~/pi-config/snapshots/YYYY-MM-DD-HH-MM/
 #
 # Purpose:
@@ -13,44 +14,56 @@
 #   - Monitor active and enabled services
 #   - Capture top-level system configuration files from /etc
 #   - Capture selected user-level configuration via safe dotfiles
-#   - Enable auditing, troubleshooting, and reproducibility of system state
+#   - Capture kernel and OS metadata for reproducibility
+#   - Capture scheduled jobs (cron + systemd timers)
+#   - Capture Docker state (containers, images, volumes)
+#   - Enable auditing, troubleshooting, and partial system reconstruction
 #
 # Snapshot filesystem:
 #   ~/pi-config/snapshots/YYYY-MM-DD-HH-MM/
 #   ├─ packages/
-#   │   ├─ dpkg-selections.txt     # Complete package selection state
-#   │   ├─ apt-manual.txt          # User-installed packages
-#   │   ├─ apt-installed.txt       # Installed packages with versions
-#   │   └─ apt-sources/            # Repositories
+#   │   ├─ dpkg-selections.txt
+#   │   ├─ apt-manual.txt
+#   │   ├─ apt-installed.txt
+#   │   └─ apt-sources/
 #   │       ├─ sources.list
 #   │       └─ sources.list.d/
 #   │
 #   ├─ config/
-#   │   └─ etc/                   # ONLY top-level files from /etc (no subdirs)
-#   │       ├─ hosts
-#   │       ├─ hostname
-#   │       ├─ fstab
-#   │       └─ ...
+#   │   └─ etc/                   # Top-level files only (no subdirs)
 #   │
 #   ├─ home/
-#   │   └─ dotfiles/              # SAFE allowlisted dotfiles only
-#   │       ├─ .bashrc
-#   │       ├─ .profile
-#   │       ├─ .gitconfig
-#   │       └─ ...
+#   │   └─ dotfiles/              # Allowlisted user config files only
 #   │
-#   └─ services/
-#       ├─ active-services.txt     # Currently running services
-#       └─ enabled-services.txt    # Services enabled at boot
+#   ├─ services/
+#   │   ├─ active-services.txt
+#   │   └─ enabled-services.txt
+#   │
+#   ├─ system/
+#   │   ├─ uname.txt              # Kernel version and architecture
+#   │   └─ os-release.txt         # OS distribution metadata
+#   │
+#   ├─ scheduler/
+#   │   ├─ user-cron.txt          # User crontab
+#   │   ├─ root-cron.txt          # Root crontab
+#   │   └─ systemd-timers.txt     # systemd timers
+#   │
+#   └─ docker/
+#       ├─ containers.txt         # docker ps -a
+#       ├─ images.txt             # docker images
+#       └─ volumes.txt            # docker volume ls
 #
 # Security Model:
-#   - Dotfiles are captured using an explicit allowlist (not wildcard matching).
-#   - Prevents accidental inclusion of sensitive files such as:
-#       .bash_history, .zsh_history, .ssh/, .gnupg/, tokens, credentials
-#   - Only known-safe configuration files are included.
-#   - /etc capture is limited to top-level files to reduce exposure and size.
-#   - Unreadable files are skipped without failing the script.
-#   - This minimizes risk of leaking secrets into version control.
+#   - Dotfiles use an explicit allowlist (no wildcards)
+#   - Prevents inclusion of sensitive files (.bash_history, .ssh, tokens, etc.)
+#   - /etc capture limited to top-level files only
+#   - No secrets, credentials, or private keys intentionally captured
+#   - Unreadable or restricted files are skipped safely
+#   - Docker and scheduler outputs are metadata-only (no secrets expected)
+#
+# Notes:
+#   - This is a “state snapshot” tool, not a full backup solution
+#   - Designed for diffing, auditing, and reproducibility
 # -----------------------------------------------------------------------------
 
 set -euo pipefail
@@ -65,6 +78,9 @@ mkdir -p "$SNAP_DIR/packages/apt-sources"
 mkdir -p "$SNAP_DIR/services"
 mkdir -p "$SNAP_DIR/config/etc"
 mkdir -p "$SNAP_DIR/home/dotfiles"
+mkdir -p "$SNAP_DIR/system"
+mkdir -p "$SNAP_DIR/scheduler"
+mkdir -p "$SNAP_DIR/docker"
 
 ########################################
 # PACKAGES
@@ -95,6 +111,10 @@ DOTFILES=(
   ".bash_aliases"
   ".gitconfig"
   ".gitignore"
+  ".vimrc"
+  ".nanorc"
+  ".tmux.conf"
+  ".inputrc"
 )
 
 for file in "${DOTFILES[@]}"; do
@@ -103,18 +123,41 @@ for file in "${DOTFILES[@]}"; do
   fi
 done
 
-# Optional: safe sub-config example
+# Optional safe sub-config
 if [[ -f "$HOME/.config/starship.toml" ]]; then
   mkdir -p "$SNAP_DIR/home/dotfiles/.config"
   cp "$HOME/.config/starship.toml" "$SNAP_DIR/home/dotfiles/.config/"
 fi
 
 ########################################
-# SERVICES (requires sudo)
+# SERVICES
 ########################################
 
 sudo systemctl list-units --type=service --state=active > "$SNAP_DIR/services/active-services.txt"
 sudo systemctl list-unit-files --type=service --state=enabled > "$SNAP_DIR/services/enabled-services.txt"
+
+########################################
+# SYSTEM (KERNEL + OS)
+########################################
+
+uname -a > "$SNAP_DIR/system/uname.txt"
+cat /etc/os-release > "$SNAP_DIR/system/os-release.txt"
+
+########################################
+# SCHEDULER (CRON + SYSTEMD TIMERS)
+########################################
+
+crontab -l > "$SNAP_DIR/scheduler/user-cron.txt" 2>/dev/null || true
+sudo crontab -l > "$SNAP_DIR/scheduler/root-cron.txt" 2>/dev/null || true
+sudo systemctl list-timers > "$SNAP_DIR/scheduler/systemd-timers.txt"
+
+########################################
+# DOCKER (IF INSTALLED)
+########################################
+
+docker ps -a > "$SNAP_DIR/docker/containers.txt" 2>/dev/null || true
+docker images > "$SNAP_DIR/docker/images.txt" 2>/dev/null || true
+docker volume ls > "$SNAP_DIR/docker/volumes.txt" 2>/dev/null || true
 
 ########################################
 # DONE
